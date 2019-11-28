@@ -34,10 +34,10 @@ function sortByUser(collection) {
 
 function sortByDate(collection) {
     return [...collection].sort((a, b) => {
-        const dataA = Date.parse(a.date) || Infinity;
-        const dataB = Date.parse(b.date) || Infinity;
+        const dataA = Date.parse(a.date) || 0;
+        const dataB = Date.parse(b.date) || 0;
 
-        return dataA - dataB;
+        return dataB - dataA;
     });
 }
 

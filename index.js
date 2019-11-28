@@ -2,6 +2,7 @@ const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
 const { sortToDos } = require('./sort');
 const { extractToDos } = require('./extractToDos');
+const { format } = require('./format');
 
 const toDosStore = [];
 
@@ -24,36 +25,42 @@ function getFiles() {
 
 function processCommand(command) {
     const [cmd, option] = command.split(' ');
+    const commandsWithOption = ['user', 'sort', 'date'];
+
+    if (commandsWithOption.includes(cmd) && !option) {
+        console.log('wrong command');
+        return;
+    }
+
     switch (cmd) {
         case 'exit':
             process.exit(0);
             break;
         case 'show':
-            console.log(toDosStore);
+            console.log(format(toDosStore));
             break;
         case 'important':
             const importantToDos = toDosStore.filter(({ comment }) =>
                 comment.includes('!')
             );
-            console.log(importantToDos);
+            console.log(format(importantToDos));
             break;
         case 'user':
-            if (!option) {
-                console.log('wrong command');
-                return;
-            }
             const userToDos = toDosStore.filter(
                 ({ user }) => user === option.toLowerCase()
             );
-            console.log(userToDos);
+            console.log(format(userToDos));
             break;
         case 'sort':
-            if (!option) {
-                console.log('wrong command');
-                return;
-            }
             const sortedToDos = sortToDos(toDosStore, option);
-            console.log(sortedToDos);
+            console.log(format(sortedToDos));
+            break;
+        case 'date':
+            const inputDate = Date.parse(option) || 0;
+            const toDosFilteredByDate = toDosStore.filter(
+                ({ date }) => (Date.parse(date) || 0) >= inputDate
+            );
+            console.log(format(toDosFilteredByDate));
             break;
         default:
             console.log('wrong command');
