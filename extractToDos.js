@@ -20,11 +20,26 @@ function extractToDos(files) {
 
             if (todoItem.length === 1) {
                 const [comment] = todoItem;
-                return { user: '', date: '', comment, filename };
+                let importance = '';
+                if (comment.includes('!')) {
+                    importance = '!';
+                }
+                return {
+                    importance,
+                    user: '',
+                    date: '',
+                    comment,
+                    filename
+                };
             }
             const [user, date, comment] = todoItem;
 
-            return { user: user.toLowerCase(), date, comment, filename };
+            let importance = '';
+            if (comment.includes('!')) {
+                importance = '!';
+            }
+
+            return { importance, user, date, comment, filename };
         });
         return [...acc, ...fileToDos];
     }, []);

@@ -40,14 +40,14 @@ function processCommand(command) {
             console.log(format(toDosStore));
             break;
         case 'important':
-            const importantToDos = toDosStore.filter(({ comment }) =>
-                comment.includes('!')
+            const importantToDos = toDosStore.filter(
+                ({ importance }) => importance === '!'
             );
             console.log(format(importantToDos));
             break;
         case 'user':
             const userToDos = toDosStore.filter(
-                ({ user }) => user === option.toLowerCase()
+                ({ user }) => user.toLowerCase() === option.toLowerCase()
             );
             console.log(format(userToDos));
             break;

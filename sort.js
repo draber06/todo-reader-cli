@@ -18,8 +18,8 @@ function sortByImportance(collection) {
 
 function sortByUser(collection) {
     return [...collection].sort((a, b) => {
-        let firstLetterA = a.user[0] || 'z';
-        let firstLetterB = b.user[0] || 'z';
+        let firstLetterA = a.user[0].toLowerCase() || 'z';
+        let firstLetterB = b.user[0].toLowerCase() || 'z';
 
         if (firstLetterA > firstLetterB) {
             return 1;

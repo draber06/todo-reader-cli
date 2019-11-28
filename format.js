@@ -4,11 +4,12 @@ function format(coll) {
     const config = {
         pad: 2,
         sep: '|',
-        fields: 4
+        fields: 5
     };
     const { pad, sep, fields } = config;
 
     const columnsMaxWidth = {
+        importance: 1,
         user: 10,
         date: 10,
         comment: 50,
@@ -25,6 +26,9 @@ function format(coll) {
 
     const header = Object.keys(columnsMaxWidth)
         .reduce((acc, key) => {
+            if (key === 'importance') {
+                return [...acc, '  !  '];
+            }
             const nField = normaliseFieldWidth(key, colsWidth[key]);
             return [...acc, `  ${nField}  `];
         }, [])
