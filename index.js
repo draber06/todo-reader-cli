@@ -1,8 +1,8 @@
 const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
-const { sortToDos } = require('./sort');
-const extract = require('./extract');
-const { format } = require('./format');
+const sort = require('./sort');
+const parse = require('./parse');
+const format = require('./format');
 
 const toDosStore = [];
 
@@ -13,7 +13,8 @@ function app() {
 
     console.log('Please, write your command!');
 
-    const toDos = extract(files);
+    const toDos = parse(files);
+    // console.log(toDos);
     toDosStore.push(...toDos);
 
     readLine(processCommand);
@@ -21,7 +22,7 @@ function app() {
 
 function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
-    return filePaths.map((path) => ({ filepath: path, data: readFile(path) }));
+    return filePaths.map((path) => ({ filepath: path, file: readFile(path) }));
 }
 
 function processCommand(command) {
@@ -42,7 +43,7 @@ function processCommand(command) {
             break;
         case 'important':
             const importantToDos = toDosStore.filter(
-                ({ importance }) => importance === '!'
+                ({ importance }) => importance.length
             );
             console.log(format(importantToDos));
             break;
@@ -53,13 +54,12 @@ function processCommand(command) {
             console.log(format(userToDos));
             break;
         case 'sort':
-            const sortedToDos = sortToDos(toDosStore, option);
+            const sortedToDos = sort(toDosStore, option);
             console.log(format(sortedToDos));
             break;
         case 'date':
-            const inputDate = Date.parse(option) || 0;
             const toDosFilteredByDate = toDosStore.filter(
-                ({ date }) => (Date.parse(date) || 0) >= inputDate
+                ({ date }) => date >= option
             );
             console.log(format(toDosFilteredByDate));
             break;

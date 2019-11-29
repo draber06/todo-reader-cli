@@ -1,4 +1,4 @@
-function sortToDos(collection, order) {
+function sort(collection, order) {
     const mapOrderToSort = {
         importance: sortByImportance,
         user: sortByUser,
@@ -10,9 +10,7 @@ function sortToDos(collection, order) {
 
 function sortByImportance(collection) {
     return [...collection].sort(
-        (a, b) =>
-            countRepeatedChars(b.comment, '!') -
-            countRepeatedChars(a.comment, '!')
+        (a, b) => b.importance.length - a.importance.length
     );
 }
 
@@ -41,11 +39,4 @@ function sortByDate(collection) {
     });
 }
 
-function countRepeatedChars(string, char) {
-    const pattern = new RegExp(`[^${char}]`, 'g');
-    return string.replace(pattern, '').length;
-}
-
-module.exports = {
-    sortToDos
-};
+module.exports = sort;

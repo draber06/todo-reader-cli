@@ -33,21 +33,23 @@ function format(coll) {
 
     const body = coll
         .map((todo) => {
-            return Object.keys(todo)
-                .map((key) => formatLine(todo[key], normalisedColWidths[key]))
+            return Object.entries(todo)
+                .map(([key, value]) =>
+                    formatLine(value, normalisedColWidths[key])
+                )
                 .join(sep);
         })
         .join(`\n`);
 
-    const dividerLength = Object.values(normalisedColWidths).reduce(
+    const blockSeparatorLength = Object.values(normalisedColWidths).reduce(
         (a, b, i) => {
             const baseW = a + b + sep.length + pad;
             return i === 1 ? baseW + pad : baseW;
         }
     );
-    const divider = '-'.repeat(dividerLength);
+    const blockSeparator = '-'.repeat(blockSeparatorLength);
 
-    return [header, divider, body, divider].join('\n');
+    return [header, blockSeparator, body, blockSeparator].join('\n');
 }
 
 function formatLine(value, maxWidth) {
@@ -71,6 +73,4 @@ function getColumnWidth(coll, colName) {
     return Math.max(...colWs, colName.length);
 }
 
-module.exports = {
-    format
-};
+module.exports = format;
