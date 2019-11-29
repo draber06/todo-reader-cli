@@ -1,7 +1,7 @@
 const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
 const { sortToDos } = require('./sort');
-const { extractToDos } = require('./extractToDos');
+const extract = require('./extract');
 const { format } = require('./format');
 
 const toDosStore = [];
@@ -12,7 +12,8 @@ function app() {
     const files = getFiles();
 
     console.log('Please, write your command!');
-    const toDos = extractToDos(files);
+
+    const toDos = extract(files);
     toDosStore.push(...toDos);
 
     readLine(processCommand);

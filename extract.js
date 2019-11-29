@@ -1,10 +1,6 @@
 const path = require('path');
 
-function extractToDos(files) {
-    // \/\/\s*TODO\s?\:?\s*([^\\n]+)
-    // \/\/\s*todo\s?\:?\s*([^\;]*);\s?([^\;]*);\s?([^\\n]*)
-    // user, date, comment, filename
-    // const pattern = new RegExp(/\/\/\s*todo\s?\:?\s*([^\n]*)/, 'gi');
+function extract(files) {
     const pattern = new RegExp(/(?<=\/\/\s*todo\s?\:?\s+)([^\n]+)/, 'gi');
 
     const toDos = files.reduce((acc, { filepath, data }) => {
@@ -13,7 +9,7 @@ function extractToDos(files) {
             return acc;
         }
 
-        const filename = path.basename(filepath);
+        const fileName = path.basename(filepath);
 
         const fileToDos = matches.map((todo) => {
             const todoItem = todo.split(';').map((item) => item.trim());
@@ -29,7 +25,7 @@ function extractToDos(files) {
                     user: '',
                     date: '',
                     comment,
-                    filename
+                    fileName
                 };
             }
             const [user, date, comment] = todoItem;
@@ -39,7 +35,7 @@ function extractToDos(files) {
                 importance = '!';
             }
 
-            return { importance, user, date, comment, filename };
+            return { importance, user, date, comment, fileName };
         });
         return [...acc, ...fileToDos];
     }, []);
@@ -47,4 +43,4 @@ function extractToDos(files) {
     return toDos;
 }
 
-module.exports = { extractToDos };
+module.exports = extract;

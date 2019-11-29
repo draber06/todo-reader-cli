@@ -25,5 +25,5 @@ function readFile(filePath) {
 
 module.exports = {
     getAllFilePathsWithExtension,
-    readFile,
+    readFile
 };

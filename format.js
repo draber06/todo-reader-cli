@@ -1,60 +1,64 @@
 function format(coll) {
     // !, user, date, commment, fileName
     // 1, 10, 10, 50, 15
+    const headerNames = ['importance', 'user', 'date', 'comment', 'fileName'];
     const config = {
-        pad: 2,
+        pad: 4,
         sep: '|',
-        fields: 5
+        fields: 5,
+        colsWidthConstraints: {
+            importance: 1,
+            user: 10,
+            date: 10,
+            comment: 50,
+            fileName: 15
+        }
     };
-    const { pad, sep, fields } = config;
+    const { pad, sep, fields, colsWidthConstraints } = config;
 
-    const columnsMaxWidth = {
-        importance: 1,
-        user: 10,
-        date: 10,
-        comment: 50,
-        filename: 15
-    };
-
-    const colsWidth = Object.keys(columnsMaxWidth).reduce((acc, colName) => {
-        const curW = Math.min(
-            columnsMaxWidth[colName],
-            getColumnWidth(coll, colName)
-        );
-        return { ...acc, [colName]: curW };
-    }, {});
-
-    const header = Object.keys(columnsMaxWidth)
-        .reduce((acc, key) => {
-            if (key === 'importance') {
-                return [...acc, '  !  '];
-            }
-            const nField = normaliseFieldWidth(key, colsWidth[key]);
-            return [...acc, `  ${nField}  `];
-        }, [])
-        .join(sep);
-
-    const dividerLength = Object.values(columnsMaxWidth).reduce(
-        (a, b) => a + b
+    const normalisedColWidths = Object.keys(colsWidthConstraints).reduce(
+        (acc, colName) => {
+            const normalisedWidth = Math.min(
+                colsWidthConstraints[colName],
+                getColumnWidth(coll, colName)
+            );
+            return { ...acc, [colName]: normalisedWidth };
+        },
+        {}
     );
-    const divider = '-'.repeat(dividerLength + fields * pad * 2);
+
+    const header = headerNames
+        .map((key) => formatLine(key, normalisedColWidths[key]))
+        .join(sep);
 
     const body = coll
         .map((todo) => {
-            const entries = Object.entries(todo);
-            return entries
-                .reduce((acc, [key, value]) => {
-                    const nField = normaliseFieldWidth(value, colsWidth[key]);
-                    return [...acc, `  ${nField}  `];
-                }, [])
+            return Object.keys(todo)
+                .map((key) => formatLine(todo[key], normalisedColWidths[key]))
                 .join(sep);
         })
         .join(`\n`);
 
-    return `${header}\n${divider}\n${body}`;
+    const dividerLength = Object.values(normalisedColWidths).reduce(
+        (a, b, i) => {
+            const baseW = a + b + sep.length + pad;
+            return i === 1 ? baseW + pad : baseW;
+        }
+    );
+    const divider = '-'.repeat(dividerLength);
+
+    return [header, divider, body, divider].join('\n');
 }
 
-function normaliseFieldWidth(field, maxW) {
+function formatLine(value, maxWidth) {
+    if (value === 'importance') {
+        return '  !  ';
+    }
+    const field = formatField(value, maxWidth);
+    return `  ${field}  `;
+}
+
+function formatField(field, maxW) {
     if (field.length > maxW) {
         return field.slice(0, maxW - 3).padEnd(maxW, '.');
     }
@@ -64,7 +68,7 @@ function normaliseFieldWidth(field, maxW) {
 
 function getColumnWidth(coll, colName) {
     const colWs = coll.map((todo) => todo[colName].length);
-    return Math.max(...colWs);
+    return Math.max(...colWs, colName.length);
 }
 
 module.exports = {
